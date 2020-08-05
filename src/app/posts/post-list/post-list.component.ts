@@ -26,7 +26,7 @@ export class PostListComponent implements OnInit {
     constructor(public postsService: PostsService) {}
 
     ngOnInit() {
-        this.posts = this.postsService.getPosts();
+        this.postsService.getPosts();
         //so getPostUpdateListener was created in postservice file as an eventlistener,
         //that way we know that is has to be updated, therefor subscribe method can be called on that
         //which has 3 arguments, the first one is a method that gets our posts back,
