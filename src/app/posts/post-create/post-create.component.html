@@ -1,0 +1,29 @@
+<mat-card>
+  <!-- #postForm="ngForm" this is a reference which gives us access to this angular form object! -->
+  <form (submit)="onAddPost(postForm)" #postForm="ngForm">
+    <mat-form-field>
+      <input
+        matInput
+        type="text"
+        name="title"
+        placeholder="Post Title"
+        ngModel
+        required
+        minlength="3"
+        #title="ngModel">
+      <mat-error *ngIf="title.invalid"> {{ errMessageHandler("title") }}</mat-error>
+    </mat-form-field>
+    <mat-form-field>
+      <textarea
+        matInput
+        rows="4"
+        name="content"
+        placeholder="Post Content"
+        ngModel
+        required
+        #content="ngModel"></textarea>
+      <mat-error *ngIf="content.invalid">{{ errMessageHandler("content") }}</mat-error>
+    </mat-form-field>
+    <button mat-raised-button type="submit" color="primary" >Save Post</button>
+  </form>
+</mat-card>
