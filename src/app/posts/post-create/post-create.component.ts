@@ -1,3 +1,4 @@
+import { mimeType } from "./mime-type.validators";
 import { Post } from "./../post.model";
 import { PostsService } from "./../posts.service";
 import { Component, OnInit } from "@angular/core";
@@ -17,6 +18,7 @@ export class PostCreateComponent implements OnInit {
     post: Post;
     isLoading = false;
     form: FormGroup;
+    imagePreview: string;
     private mode = "create";
     private postId: string = null;
 
@@ -30,7 +32,10 @@ export class PostCreateComponent implements OnInit {
                 validators: [ Validators.required, Validators.minLength(3) ]
             }),
             content: new FormControl(null, { validators: [ Validators.required ] }),
-            image: new FormControl(null, { validators: [ Validators.required ] })
+            image: new FormControl(null, {
+                validators: [ Validators.required ],
+                asyncValidators: [ mimeType ]
+            })
         });
         //param map is an observable
         this.route.paramMap.subscribe((paramMap: ParamMap) => {
@@ -66,8 +71,13 @@ export class PostCreateComponent implements OnInit {
         const file = (event.target as HTMLInputElement).files[0];
         this.form.patchValue({ image: file }); // this is a file object
         this.form.get("image").updateValueAndValidity(); // this method is checking the validity of the file
-        console.log(file);
-        console.log(this.form);
+        const reader = new FileReader();
+        //this is async code, might take a while to process
+        //this is why we are using a callback
+        reader.onload = () => {
+            this.imagePreview = reader.result as string;
+        };
+        reader.readAsDataURL(file);
     }
 
     onSavePost() {
