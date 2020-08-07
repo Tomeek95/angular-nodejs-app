@@ -29,7 +29,8 @@ export class PostCreateComponent implements OnInit {
             title: new FormControl(null, {
                 validators: [ Validators.required, Validators.minLength(3) ]
             }),
-            content: new FormControl(null, { validators: [ Validators.required ] })
+            content: new FormControl(null, { validators: [ Validators.required ] }),
+            image: new FormControl(null, { validators: [ Validators.required ] })
         });
         //param map is an observable
         this.route.paramMap.subscribe((paramMap: ParamMap) => {
@@ -56,6 +57,17 @@ export class PostCreateComponent implements OnInit {
                 this.postId = null;
             }
         });
+    }
+
+    onImagePicked(event: Event) {
+        //with ts, we have to specify that we are assuming a file as an input,
+        //so we have to cast event.target to an HTMLInputElement
+        //only 1 file can be selected
+        const file = (event.target as HTMLInputElement).files[0];
+        this.form.patchValue({ image: file }); // this is a file object
+        this.form.get("image").updateValueAndValidity(); // this method is checking the validity of the file
+        console.log(file);
+        console.log(this.form);
     }
 
     onSavePost() {
