@@ -21,16 +21,19 @@ export class PostListComponent implements OnInit {
       this also makes only ONE instance!!!!
       */
     posts: Post[] = [];
+    isLoading = false;
     private postsSub: Subscription;
 
     constructor(public postsService: PostsService) {}
 
     ngOnInit() {
+        this.isLoading = true;
         this.postsService.getPosts();
         //so getPostUpdateListener was created in postservice file as an eventlistener,
         //that way we know that is has to be updated, therefor subscribe method can be called on that
         //which has 3 arguments, the first one is a method that gets our posts back,
         this.postsSub = this.postsService.getPostUpdateListener().subscribe((posts: Post[]) => {
+            this.isLoading = false;
             this.posts = posts;
         });
     }

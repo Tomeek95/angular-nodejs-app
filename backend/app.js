@@ -1,7 +1,7 @@
 const express = require("express");
 const bodyparser = require("body-parser");
 const mongoose = require("mongoose");
-const PostModel = require("./models/post");
+const postRoutes = require("./routes/postRoutes");
 //express app is created
 //this is a constant since we never do override the app
 const app = express();
@@ -30,44 +30,8 @@ app.use((req, res, next) => {
     next();
 });
 
-//app.post stb... uses built in middlewares
-//to extract request body (incoming data) BODY_PARSER will be used
-app.post("/api/posts", (req, res, next) => {
-    const post = new PostModel({
-        title: req.body.title,
-        content: req.body.content
-    });
-    post.save().then((result) => {
-        console.log(result);
-        res.status(201).json({
-            message: "Post added successfully",
-            postId: result._id
-        });
-    });
-});
-// everything was okay
-
-//the first argument is path, and the others are filters as well, but the last one is a function
-//which exectues certain commands that we write in
-app.get("/api/posts", (req, res, next) => {
-    PostModel.find().then((documents) => {
-        console.log(documents);
-        res.status(200).json({
-            message: "posts fetched successfully!",
-            posts: documents
-        });
-    });
-
-    //last statement will be returned so we do not have to return it
-    /**/
-});
-
-app.delete("/api/posts/:id", (req, res, next) => {
-    PostModel.deleteOne({ _id: req.params.id }).then((result) => {
-        console.log("deleted from the database");
-        res.status(200).json({ message: "Post Deleted" });
-    });
-});
+//this is how we make express to know that it has to use the post routes
+app.use("/api/posts", postRoutes);
 
 //this way the app and the middlewares are exported too
 module.exports = app;
