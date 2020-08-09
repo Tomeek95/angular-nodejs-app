@@ -34,19 +34,31 @@ const PostModel = require("../models/post");
 
 //app.post stb... uses built in middlewares
 //middlewares are executing arguments(functions) in the order they are placed
-//    multer(storage).single("image") ==> multer will try to use the storage prop to find out what
-//    is the location, the name of the file and then that it is a single file and
+//    multer(storage).single("image") ==> multer will try to use the storage prop
+//    (that has to be sent as a json object)to find out what is the location,
+//    the name of the file and then that it is a single file and
 //    it will try to find it in the image property of the request body
 //to extract request body (incoming data) BODY_PARSER will be used
-router.post("", multer(storage).single("image"), (req, res, next) => {
+router.post("", multer({ storage: storage }).single("image"), (req, res, next) => {
+    const url = req.protocol + "://" + req.get("host");
     const post = new PostModel({
         title: req.body.title,
-        content: req.body.content
+        content: req.body.content,
+        imagePath: url + "/images/" + req.file.filename
     });
     post.save().then((createdPost) => {
         res.status(201).json({
             message: "Post added successfully",
-            postId: createdPost._id
+            post: {
+                id: createdPost._id,
+                title: createdPost.title,
+                content: createdPost.content,
+                imagePath: createdPost.imagePath
+            }
+            /*thi is a next gen js feature, we give the whole object, and then override one existing one
+              ...createdPost,
+              id: createdPost._id
+            */
         });
     });
 });

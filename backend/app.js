@@ -1,3 +1,4 @@
+const path = require("path"); //this parses the route savely
 const express = require("express");
 const bodyparser = require("body-parser");
 const mongoose = require("mongoose");
@@ -17,6 +18,9 @@ mongoose
     });
 app.use(bodyparser.json());
 app.use(bodyparser.urlencoded({ extended: false }));
+
+//any requests targeting images will have a green light
+app.use("/images", express.static(path.join("backend/images")));
 
 //correcting cors error -->
 //1. Header --> this means that it does not matter which domain the apps are running on, it is allowed to get resources
