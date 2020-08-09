@@ -1,10 +1,44 @@
 const express = require("express");
+//multer - file uploader package
+const multer = require("multer");
+//multer gives us automatically the mimetype of the file (that was needed to be done manually on the frontend)
+//this is a helper constant
+const MIME_TYPE_MAP = {
+    "image/png": "png",
+    "image/jpeg": "jpg",
+    "image/jpg": "jpg"
+};
+//destination has 3 arguments:
+//  - request
+//  -file that we want to upload
+//  -a callback function, where we need to specify the error message, and the relative path
+//          to the server.js
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        const isValid = MIME_TYPE_MAP[file.mimetype];
+        let error = new Error("Invalid mime type");
+        if (isValid) {
+            error = null;
+        }
+        cb(error, "backend/images");
+    },
+    filename: (req, file, cb) => {
+        const name = file.originalname.toLowerCase().split(" ").join("-");
+        const fileExtension = MIME_TYPE_MAP[file.mimetype];
+        cb(null, name + "-" + Date.now() + "." + fileExtension);
+    }
+});
+
 const router = express.Router();
 const PostModel = require("../models/post");
 
 //app.post stb... uses built in middlewares
+//middlewares are executing arguments(functions) in the order they are placed
+//    multer(storage).single("image") ==> multer will try to use the storage prop to find out what
+//    is the location, the name of the file and then that it is a single file and
+//    it will try to find it in the image property of the request body
 //to extract request body (incoming data) BODY_PARSER will be used
-router.post("", (req, res, next) => {
+router.post("", multer(storage).single("image"), (req, res, next) => {
     const post = new PostModel({
         title: req.body.title,
         content: req.body.content
