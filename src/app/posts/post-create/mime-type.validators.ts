@@ -1,10 +1,15 @@
 import { AbstractControl } from "@angular/forms";
-import { Observable, Observer } from "rxjs";
+import { Observable, Observer, of } from "rxjs";
+
 //async validator
 //[key: string] indicates a dynamic property, we do not care about its name
 export const mimeType = (
     control: AbstractControl
 ): Promise<{ [key: string]: any }> | Observable<{ [key: string]: any }> => {
+    if (typeof control.value === "string") {
+        return of(null);
+    } // this is just to check if it is a string, and if it is, then it returns an observable,
+    //  that ommits data immedeatly
     const file = control.value as File;
     const fileReader = new FileReader();
     //the first parameter is an observer that is granted by rxjs, it is a tool to use to control
