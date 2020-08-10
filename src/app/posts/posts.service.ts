@@ -100,7 +100,7 @@ export class PostsService {
                 id: id,
                 title: title,
                 content: content,
-                imagePath: "response.imagePath"
+                imagePath: ""
             };
             updatedPosts[oldPostIndex] = post;
             this.posts = updatedPosts;
